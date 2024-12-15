@@ -103,7 +103,7 @@ if __name__ == "__main__":
     print(f"Found {len(found)} pages!")
 
     # store the pages in a file
-    with open("wikipedia_pages.txt", "w") as file:
+    with open("./data/wikipedia_pages.txt", "w") as file:
       print(f"Found {len(found)} pages!")
       for page in found:
         file.write(f"{page}\n")
