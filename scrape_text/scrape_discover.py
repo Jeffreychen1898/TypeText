@@ -1,10 +1,10 @@
+import time
+import re
+from collections import deque
+import threading
 import requests
 from bs4 import BeautifulSoup
-import threading
-from collections import deque
-import re
 import yaml
-import time
 import urllib.parse
 
 # soft page count, can go over
