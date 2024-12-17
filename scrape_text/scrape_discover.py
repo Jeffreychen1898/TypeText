@@ -49,7 +49,7 @@ def scrape_thread(index):
 
     # valid status code: 200 - 299
     if int(status / 100) != 2:
-      print("Response [{status}] on page: {process_page}!")
+      print(f"Response [{status}] on page: {process_page}!")
       continue
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -58,7 +58,7 @@ def scrape_thread(index):
     for link in links:
       path = urllib.parse.unquote(link["href"])
       if validate_format(path):
-        found_pages.append(path)
+        found_pages.append(path.split("#")[0])
 
     with thread_lock:
       for page in found_pages:
@@ -104,6 +104,6 @@ if __name__ == "__main__":
 
     # store the pages in a file
     with open("./data/wikipedia_pages.txt", "w") as file:
-      print(f"Found {len(found)} pages!")
+      file.write(f"Found {len(found)} pages!\n")
       for page in found:
         file.write(f"{page}\n")
