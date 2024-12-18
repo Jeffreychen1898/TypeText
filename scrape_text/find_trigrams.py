@@ -94,6 +94,8 @@ def find_trigrams(index):
 if __name__ == "__main__":
   scrape_probability = 1
   filter_threshold = 0
+  input_file = ""
+  output_file = ""
   # read the config file
   with open("./configs/trigrams_config.yaml", "r") as file:
     configs = yaml.load(file, Loader=yaml.FullLoader)
@@ -101,13 +103,15 @@ if __name__ == "__main__":
     delay = float(configs["delay"])
     scrape_probability = float(configs["scrape_probability"])
     filter_threshold = float(configs["filter_threshold"])
+    input_file = configs["input"]
+    output_file = configs["output"]
 
   # prepare all the global variables
   for thread in range(thread_count):
     links.append([])
 
   # read the list of pages
-  with open("./data/wikipedia_pages.txt", "r") as file:
+  with open(input_file, "r") as file:
     for i, line in enumerate(file):
       # the first line indicate the number of pages
       if i == 0:
@@ -128,7 +132,7 @@ if __name__ == "__main__":
     thread.join()
 
   # store the trigrams in a file
-  with open("./data/trigrams.txt", "w") as file:
+  with open(output_file, "w") as file:
     file.write(f"Found {len(full_trigrams)} trigrams!\n")
     for trigram in full_trigrams:
       file.write(f"{full_trigrams[trigram]} {trigram}\n")

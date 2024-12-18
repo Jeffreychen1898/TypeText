@@ -1,0 +1,4 @@
+input: ./data/wikipedia_pages.txt
+output: ./data/wikipages- .txt
+partitions: 20
+progress_interval: 0.1

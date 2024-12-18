@@ -1,5 +1,5 @@
-thread_count: 8
-delay: 1
+thread_count: 16
+delay: 0.3
 root_pages:
   - "/wiki/University_of_Michigan"
   - "/wiki/Genshin_Impact"

@@ -8,7 +8,7 @@ import yaml
 import urllib.parse
 
 # soft page count, can go over
-PAGE_COUNT = 5000
+PAGE_COUNT = 2000000
 
 WEB_PROTOCOL = "https"
 WEB_SUBDOMAIN = "en"

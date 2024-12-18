@@ -1,4 +1,6 @@
-thread_count: 8
-delay: 0.2
+thread_count: 16
+delay: 0.1
 filter_threshold: 2
-scrape_probability: 0.75
+scrape_probability: 0.05
+input: "./data/wikipages-19.txt"
+output: "./data/trigrams-19.txt"
