@@ -5,7 +5,6 @@ input_files = []
 output_files = []
 
 trigrams_base = []
-separators_dict = set()
 
 def sort_file(path, writemode):
   trigrams = trigrams_base.copy()
@@ -36,11 +35,11 @@ def sort_file(path, writemode):
       word2 = urllib.parse.quote(word2[1:-2])
       word3 = urllib.parse.quote(word3[1:-2])
 
-      trigram_str = f"{word1}#{word2}#{word3}#{count}"
+      trigram_str = (word1, word2, word3, str(count))
       trigrams.append(trigram_str)
 
   # sort the trigrams array
-  trigrams = sorted(trigrams, key=lambda x: x.replace("#", ""), reverse=True)
+  trigrams = sorted(trigrams, key=lambda x: "".join(x), reverse=True)
 
   # store the trigrams in the proper files
   store_file = open(
@@ -51,7 +50,7 @@ def sort_file(path, writemode):
     smallest = trigrams.pop()
     
     # if we encounter a separator, load up the next file
-    if smallest in separators_dict:
+    if len(smallest) == 1:
       section_index += 1
       store_file.close()
       if len(trigrams) > 0:
@@ -65,7 +64,8 @@ def sort_file(path, writemode):
       continue
 
     # write to the file
-    store_file.write(f"{smallest}\n")
+    trigram_string = "#".join(smallest)
+    store_file.write(f"{trigram_string}\n")
   
   if store_file is not None:
     store_file.close()
@@ -82,8 +82,7 @@ if __name__ == "__main__":
   # store the separators in the trigrams_base
   for separator in separators:
     cleaned_separator = separator.lstrip("\\")
-    trigrams_base.append(cleaned_separator)
-    separators_dict.add(cleaned_separator)
+    trigrams_base.append((cleaned_separator,))
 
   # sort all the files
   for i, file in enumerate(input_files):
