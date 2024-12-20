@@ -1,0 +1,57 @@
+partitions:
+ - ./data/trigrams-f-0.bin
+ - ./data/trigrams-f-1.bin
+ - ./data/trigrams-f-2.bin
+ - ./data/trigrams-f-3.bin
+ - ./data/trigrams-f-4.bin
+ - ./data/trigrams-f-5.bin
+ - ./data/trigrams-f-6.bin
+ - ./data/trigrams-f-7.bin
+ - ./data/trigrams-f-8.bin
+ - ./data/trigrams-f-9.bin
+ - ./data/trigrams-f-10.bin
+ - ./data/trigrams-f-11.bin
+ - ./data/trigrams-f-12.bin
+ - ./data/trigrams-f-13.bin
+ - ./data/trigrams-f-14.bin
+ - ./data/trigrams-f-15.bin
+ - ./data/trigrams-f-16.bin
+ - ./data/trigrams-f-17.bin
+ - ./data/trigrams-f-18.bin
+separators:
+  - \%2CR
+  - \%E1%
+  - 0m%2
+  - Baro
+  - Hewa
+  - OnJa
+  - Toda
+  - andd
+  - bega
+  - diff
+  - grea
+  - into
+  - non-
+  - onDe
+  - roya
+  - theA
+  - them
+  - tot
+  # - \%2Ccalif
+  # - \-disc%
+  # - \1900%2
+  # - alsosai
+  # - ashadh
+  # - bytheser
+  # - diana%
+  # - forthe
+  # - humani
+  # - isthoug
+  # - metaphy
+  # - oflow-
+  # - partici
+  # - s.terri
+  # - t%28t
+  # - theillin
+  # - thewed
+  # - upto3

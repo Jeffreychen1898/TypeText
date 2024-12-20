@@ -5,6 +5,7 @@ input_files = []
 output_files = []
 
 trigrams_base = []
+case_sensitive = False
 
 def sort_file(path, writemode):
   trigrams = trigrams_base.copy()
@@ -31,6 +32,11 @@ def sort_file(path, writemode):
         continue
 
       # encode the words
+      if not case_sensitive:
+        word1 = word1.lower()
+        word2 = word2.lower()
+        word3 = word3.lower()
+
       word1 = urllib.parse.quote(word1[2:-2])
       word2 = urllib.parse.quote(word2[1:-2])
       word3 = urllib.parse.quote(word3[1:-2])
@@ -78,6 +84,7 @@ if __name__ == "__main__":
     input_files = configs["files"]
     separators = configs["separators"]
     output_files = configs["output"].split()
+    case_sensitive = configs["case_sensitive"]
   
   # store the separators in the trigrams_base
   for separator in separators:

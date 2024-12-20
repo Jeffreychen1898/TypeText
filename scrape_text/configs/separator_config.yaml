@@ -1,4 +1,5 @@
 output: ./data/partition- .txt
+case_sensitive: True
 files:
   - ./data/trigrams-0.txt
   - ./data/trigrams-1.txt
@@ -39,3 +40,21 @@ separators:
   - theA
   - them
   - tot
+  # - \%2Ccalif
+  # - \-disc%
+  # - \1900%2
+  # - alsosai
+  # - ashadh
+  # - bytheser
+  # - diana%
+  # - forthe
+  # - humani
+  # - isthoug
+  # - metaphy
+  # - oflow-
+  # - partici
+  # - s.terri
+  # - t%28t
+  # - theillin
+  # - thewed
+  # - upto3
