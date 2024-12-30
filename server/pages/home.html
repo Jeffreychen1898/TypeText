@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TypeText - Home</title>
+  </head>
+  <body>
+    <h1>Home Page</h1>
+    <script>
+      window.onload = function () {
+        fetch("/api/notices")
+          .then((res) => res.json())
+          .then((data) => {
+            const body = document.getElementsByTagName("body")[0]
+            for (const line of data.notices.split("\n")) {
+              body.innerHTML += `<p>${line}</p>`
+            }
+          })
+      }
+    </script>
+  </body>
+</html>

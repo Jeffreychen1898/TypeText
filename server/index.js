@@ -1,5 +1,7 @@
 const express = require("express")
 
+const noticesRoutes = require("./src/retrieveInfoRoutes")
+
 const app = express()
 
 const PORT = 8000
@@ -10,6 +12,6 @@ function serverOnLoad() {
 
 app.listen(PORT, serverOnLoad)
 
-app.get("/", (req, res) => {
-	res.send("Hello World!")
-})
+// ROUTES
+app.use("/api", noticesRoutes)
+app.use("/", express.static("pages"))
