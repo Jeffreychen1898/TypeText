@@ -39,13 +39,13 @@ class TextRouter {
     if (this.m_defaultText === "") {
       return res.status(500).json({
         error: "Internal server error!",
-        text: ""
+        text: "",
       })
     }
 
     res.status(200).json({
       error: null,
-      text: this.m_defaultText
+      text: this.m_defaultText,
     })
   }
 
@@ -60,13 +60,12 @@ class TextRouter {
       await sql.dbExecute(
         `INSERT INTO typingsessions (id, userid, wpm, accuracy, sessiontext)
          VALUES (?, ?, ?, ?, ?)`,
-         [id, req.auth.uid, wpm, accuracy, text]
+        [id, req.auth.uid, wpm, accuracy, text]
       )
-
-    } catch(err) {
+    } catch (err) {
       return res.status(500).json({
         error: "Internal server error!",
-        session: undefined
+        session: undefined,
       })
     }
 
@@ -77,8 +76,8 @@ class TextRouter {
         userid: req.auth.uid,
         wpm: wpm,
         accuracy: accuracy,
-        text: text
-      }
+        text: text,
+      },
     })
   }
 }

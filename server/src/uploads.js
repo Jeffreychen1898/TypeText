@@ -27,20 +27,20 @@ const pfpUpload = multer({
   storage: pfpUploadStorage,
   fileFilter: pfpUploadRestrictions,
   limits: {
-    fileSize: 5 * 1024 * 1024
-  }
+    fileSize: 5 * 1024 * 1024,
+  },
 })
 
 const errorHandling = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     return res.status(500).json({
-      error: "Internal server error!"
+      error: "Internal server error!",
     })
   }
 
   if (err) {
     return res.status(403).json({
-      error: err.message
+      error: err.message,
     })
   }
 
@@ -49,5 +49,5 @@ const errorHandling = (err, req, res, next) => {
 
 module.exports = {
   pfpUpload,
-  errorHandling
+  errorHandling,
 }
