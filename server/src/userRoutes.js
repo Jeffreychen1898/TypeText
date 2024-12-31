@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 const sql = require("./database")
-const { profile } = require("console")
 
 const router = express.Router()
 
