@@ -33,6 +33,7 @@ sql.dbConnect(path.join(__dirname, "sqlite", "database.db"), databaseOnConnect)
 app.use(cors())
 
 app.use("/api/users/upload/pfp", uploads.pfpUpload.single("pfp"))
+app.use(uploads.errorHandling)
 
 //app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
