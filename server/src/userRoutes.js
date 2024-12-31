@@ -9,6 +9,7 @@ const router = express.Router()
 
 const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS)
 const JWT_KEY = process.env.JWT_SECRET_KEY
+const WPM_AVERAGE_COUNT = 100
 
 const authUser = (req, res, next) => {
   const uid = req.body.authtoken // validate token
@@ -19,6 +20,7 @@ const authUser = (req, res, next) => {
   next()
 }
 
+// todo: optimize this route a bit more
 router.post("/profile", authUser, async (req, res) => {
   let profile_info = {}
 
@@ -36,8 +38,30 @@ router.post("/profile", authUser, async (req, res) => {
       })
     }
 
-    const records = await sql.dbFetchOne(
-      `SELECT pfp, wpm, numsessions FROM profiles WHERE userid = ?`,
+    const pfp = await sql.dbFetchOne(
+      `SELECT pfp FROM profiles WHERE userid = ?`,
+      [req.auth.uid]
+    )
+
+    const typing_speeds = await sql.dbFetchAll(
+      `SELECT wpm FROM typingsessions WHERE userid = ? ORDER BY created DESC LIMIT ?`,
+      [req.auth.uid, WPM_AVERAGE_COUNT]
+    )
+
+    // calculate average typing speed
+    let typing_average = 0;
+    let num_datapoints = 0;
+    for (const speed of typing_speeds) {
+      typing_average += speed.wpm
+      num_datapoints ++
+    }
+    if (num_datapoints > 0)
+      typing_average /= num_datapoints
+    else
+      typing_average = 0
+
+    const session_count = await sql.dbFetchOne(
+      `SELECT COUNT(*) AS count FROM typingsessions WHERE userid = ?`,
       [req.auth.uid]
     )
 
@@ -45,11 +69,12 @@ router.post("/profile", authUser, async (req, res) => {
       userid: user.id,
       username: user.username,
       created: user.created,
-      pfp: records.pfp,
-      wpm: records.wpm,
-      sessions: records.numsessions,
+      pfp: pfp.pfp,
+      wpm: typing_average,
+      sessions: session_count.count,
     }
   } catch (err) {
+    console.log(err)
     return res.status(500).json({
       error: "Internal server error!",
       target: "/profile",
@@ -273,9 +298,9 @@ router.post("/register", async (req, res) => {
       user_parameters
     )
     await sql.dbExecute(
-      `INSERT INTO profiles (userid, pfp, wpm, numsessions)
-       VALUES (?, ?, ?, ?)`,
-      [userid, "", 0, 0]
+      `INSERT INTO profiles (userid, pfp)
+       VALUES (?, ?)`,
+      [userid, ""]
     )
   } catch (err) {
     console.log(err)
