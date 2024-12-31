@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TypeText - Profile</title>
+  </head>
+  <body>
+    <form method="post" action="/api/users/profile">
+      <h1>Retrieve Info</h1>
+      <input
+        type="hidden"
+        name="authtoken"
+        value="dbb8092c2a1141d1bc5fca49df7ce716"
+      />
+      <button type="submit">Get Profile</button>
+    </form>
+    <form method="post" action="/api/users/changepassword">
+      <h1>Change Password</h1>
+      <input
+        type="hidden"
+        name="authtoken"
+        value="dbb8092c2a1141d1bc5fca49df7ce716"
+      />
+      <input name="oldpassword" placeholder="old password" />
+      <input name="password1" placeholder="new password" />
+      <input name="password2" placeholder="retype your new password" />
+      <button type="submit">Change Password</button>
+    </form>
+    <form
+      method="post"
+      action="/api/users/upload/pfp"
+      enctype="multipart/form-data"
+    >
+      <h1>Set Profile Picture</h1>
+      <input
+        type="hidden"
+        name="authtoken"
+        value="dbb8092c2a1141d1bc5fca49df7ce716"
+      />
+      <input name="pfp" type="file" />
+      <button type="submit">Upload</button>
+    </form>
+  </body>
+</html>

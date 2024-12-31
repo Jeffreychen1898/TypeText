@@ -1,5 +1,6 @@
 data/
 *.db
+server/uploads/pfp/**
 
 # Git ignore template from https://github.com/github/gitignore.git
 

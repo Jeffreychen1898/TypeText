@@ -7,6 +7,7 @@ const cors = require("cors")
 const sql = require("./src/database")
 const noticesRoutes = require("./src/retrieveInfoRoutes")
 const userRouters = require("./src/userRoutes")
+const uploads = require("./src/uploads")
 
 const app = express()
 
@@ -30,6 +31,9 @@ sql.dbConnect(path.join(__dirname, "sqlite", "database.db"), databaseOnConnect)
 
 // middlewares
 app.use(cors())
+
+app.use("/api/users/upload/pfp", uploads.pfpUpload.single("pfp"))
+
 //app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 

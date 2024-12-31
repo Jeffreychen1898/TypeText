@@ -46,5 +46,5 @@ module.exports = {
   dbConnect,
   dbFetchOne,
   dbFetchAll,
-  dbExecute
+  dbExecute,
 }
