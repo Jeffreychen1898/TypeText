@@ -6,7 +6,8 @@ const cors = require("cors")
 
 const sql = require("./src/database")
 const noticesRoutes = require("./src/retrieveInfoRoutes")
-const userRouters = require("./src/userRoutes")
+const userRoutes = require("./src/userRoutes")
+const textRoutes = require("./src/textRoutes")
 const uploads = require("./src/uploads")
 
 const app = express()
@@ -40,5 +41,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // ROUTES
 app.use("/api/notices", noticesRoutes)
-app.use("/api/users", userRouters)
+app.use("/api/text", textRoutes)
+app.use("/api/users", userRoutes.router)
 app.use("/", express.static("pages"))

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TypeText - Profile</title>
+  </head>
+  <body>
+    <form method="post" action="/api/text/generate">
+      <h1>Generate Text</h1>
+      <input
+        type="hidden"
+        name="authtoken"
+        value="dbb8092c2a1141d1bc5fca49df7ce716"
+      />
+      <button type="submit">Generate Text</button>
+    </form>
+    <form method="post" action="/api/text/session">
+      <h1>Session</h1>
+      <input
+        type="hidden"
+        name="authtoken"
+        value="dbb8092c2a1141d1bc5fca49df7ce716"
+      />
+      <input name="wpm" placeholder="wpm">
+      <input name="accuracy" placeholder="accuracy">
+      <input name="text" placeholder="text">
+      <button type="submit">Post Session</button>
+    </form>
+  </body>
+</html>
