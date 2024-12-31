@@ -19,7 +19,7 @@ class InfoRouter {
 
     // define the routes
     this.router = express.Router()
-    this.router.get("/notices", this.getNotices.bind(this))
+    this.router.get("/retrieve", this.getNotices.bind(this))
   }
 
   async getNotices(req, res) {

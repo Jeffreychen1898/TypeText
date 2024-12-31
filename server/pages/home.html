@@ -8,7 +8,7 @@
     <h1>Home Page</h1>
     <script>
       window.onload = function () {
-        fetch("/api/notices")
+        fetch("/api/notices/retrieve")
           .then((res) => res.json())
           .then((data) => {
             const body = document.getElementsByTagName("body")[0]
