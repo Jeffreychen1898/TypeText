@@ -1,8 +1,10 @@
 import os
+import threading
 import time
 import struct
 import urllib.parse
 import random
+import requests
 import yaml
 
 from worker.utils import response_ok
@@ -35,7 +37,25 @@ class TrigramPartitions:
             "port": self.port,
             "partitions": [i for i, val in enumerate(self.trigrams) if val is not None],
         })
-        self.generate_text()
+
+        # TEST
+        self.add_service({
+            "host": "http://10.0.0.144:8000",
+            "port": "8000",
+            "partitions": range(0, 19)
+        })
+
+        self.generated_text_list = []
+        self.generated_text_list_lock = threading.Lock()
+        threads = [ threading.Thread(target=self.text_generator) for _ in range(8) ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        # generated_text = self.generate_text()
+        # print()
+        # print(" ".join(generated_text))
+        # print()
 
     def add_service(self, server):
         service_index = len(self.services)
@@ -200,10 +220,23 @@ class TrigramPartitions:
 
             # send get request
             try:
-                response = requests.get(available_service["host"], timeout=self.request_timeout_time)
+                response_params = { "trigram": id }
+                response_path = f"{available_service["host"]}/retrieve/edge"
+                response = requests.get(
+                    response_path,
+                    params=response_params,
+                    timeout=self.request_timeout_time
+                )
                 if response_ok(response.status_code):
-                    return response.json()
-            except:
+                    response_json = response.json()
+                    return {
+                        "trigram": response_json["words"],
+                        "frequency": response_json["frequency"],
+                        "edge_id": response_json["begin"],
+                        "num_edges": response_json["num_edges"],
+                    }
+            except Exception as e:
+                print(e)
                 pass
 
             # try again, maybe with a new service
@@ -215,46 +248,46 @@ class TrigramPartitions:
         partition_start = self.trigram_distribution[rand_partition]["begin"]
 
         rand_trigram = random.randint(0, len(self.graphs[rand_partition]) - 1)
+        word, frequency = self.get_trigram_word(rand_partition, rand_trigram + partition_start)
 
-        return (rand_trigram + partition_start, rand_partition, rand_trigram)
+        return (rand_trigram + partition_start, rand_partition, rand_trigram, word)
 
     def generate_text(self):
         # choose the seed, random trigram
         final = []
         for j in range(50):
-            (start_id, start_partition, start_index) = self.sample_random_trigram()
+            (start_id, start_partition, start_index, word) = self.sample_random_trigram()
             sequence = [{
                 "trigram": [start_partition, start_index],
                 "id": start_id,
                 "edges": self.graphs[start_partition][start_index],
+                "word": word
             }]
             for i in range(50):
-                if sequence[-1]["edges"][2] == 0:
+                if sequence[-1]["edges"][1] == 0:
                     break
 
-                next_trigram_id = random.randint(0, sequence[-1]["edges"][2] - 1) + sequence[-1]["edges"][1]
+                next_trigram_id = random.randint(0, sequence[-1]["edges"][1] - 1) + sequence[-1]["edges"][0]
                 next_trigram_partition = self.get_partition(next_trigram_id)
                 id_start = self.trigram_distribution[next_trigram_partition]["begin"]
+
+                next_trigram = self.retrieve_trigram(next_trigram_id)
+
                 sequence.append({
                     "trigram": [next_trigram_partition, next_trigram_id - id_start],
                     "id": next_trigram_id,
-                    "edges": self.graphs[next_trigram_partition][next_trigram_id - id_start],
+                    "edges": ( next_trigram["edge_id"], next_trigram["num_edges"] ),
+                    "word": next_trigram["trigram"],
                 })
             if len(sequence) > len(final):
                 final = sequence
 
-        trigram_text = ""
-        for elem in final:
-            elem_partition = elem["trigram"][0]
-            elem_id = elem["id"]
-            elem_trigrams = self.get_trigram_word(elem["trigram"][0], elem["id"])[0]
-            if trigram_text == "":
-                trigram_text += f"{elem_trigrams[0]} {elem_trigrams[1]} "
-            trigram_text += f"{elem_trigrams[2]} "
-            print(elem_trigrams)
-
-        print()
-        print(urllib.parse.unquote(trigram_text))
+        generated_text = [
+            urllib.parse.unquote(final[0]["word"][0]),
+            urllib.parse.unquote(final[0]["word"][1]),
+        ]
+        generated_text += [ urllib.parse.unquote(elem["word"][2]) for elem in final ]
+        return generated_text
 
     def is_home_service(self, service):
         try:
@@ -266,3 +299,12 @@ class TrigramPartitions:
             return True
         except:
             return False
+
+    def text_generator(self):
+        for i in range(20):
+            new_text = self.generate_text()
+            new_text = " ".join(new_text)
+            with self.generated_text_list_lock:
+                self.generated_text_list.append(new_text)
+                print(new_text)
+                print()
