@@ -1,6 +1,8 @@
+*.bin
 data/
 *.db
 server/uploads/pfp/**
+.DS_Store
 
 # Git ignore template from https://github.com/github/gitignore.git
 

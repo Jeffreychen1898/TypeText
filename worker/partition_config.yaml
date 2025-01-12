@@ -1,0 +1,22 @@
+id_lookup:
+  trigrams-f-0.bin: 0-153694
+  trigrams-f-1.bin: 153695-267836
+  trigrams-f-10.bin: 1684982-1854077
+  trigrams-f-11.bin: 1854078-1990007
+  trigrams-f-12.bin: 1990008-2149628
+  trigrams-f-13.bin: 2149629-2294550
+  trigrams-f-14.bin: 2294551-2467056
+  trigrams-f-15.bin: 2467057-2634436
+  trigrams-f-16.bin: 2634437-2790972
+  trigrams-f-17.bin: 2790973-2913055
+  trigrams-f-18.bin: 2913056-3070614
+  trigrams-f-2.bin: 267837-415917
+  trigrams-f-3.bin: 415918-586513
+  trigrams-f-4.bin: 586514-795055
+  trigrams-f-5.bin: 795056-981257
+  trigrams-f-6.bin: 981258-1184959
+  trigrams-f-7.bin: 1184960-1363524
+  trigrams-f-8.bin: 1363525-1508463
+  trigrams-f-9.bin: 1508464-1684981
+total_nodes: 3070615
+

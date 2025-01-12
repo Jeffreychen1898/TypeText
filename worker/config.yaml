@@ -1,0 +1,58 @@
+partitions:
+  - graph: ./graph/graph-0.bin
+    trigrams: ./trigrams/trigrams-f-0.bin
+    partition: 0
+  - graph: ./graph/graph-1.bin
+    trigrams: ./trigrams/trigrams-f-1.bin
+    partition: 1
+  - graph: ./graph/graph-2.bin
+    trigrams: ./trigrams/trigrams-f-2.bin
+    partition: 2
+  - graph: ./graph/graph-3.bin
+    trigrams: ./trigrams/trigrams-f-3.bin
+    partition: 3
+  - graph: ./graph/graph-4.bin
+    trigrams: ./trigrams/trigrams-f-4.bin
+    partition: 4
+  - graph: ./graph/graph-5.bin
+    trigrams: ./trigrams/trigrams-f-5.bin
+    partition: 5
+  - graph: ./graph/graph-6.bin
+    trigrams: ./trigrams/trigrams-f-6.bin
+    partition: 6
+  - graph: ./graph/graph-7.bin
+    trigrams: ./trigrams/trigrams-f-7.bin
+    partition: 7
+  - graph: ./graph/graph-8.bin
+    trigrams: ./trigrams/trigrams-f-8.bin
+    partition: 8
+  - graph: ./graph/graph-9.bin
+    trigrams: ./trigrams/trigrams-f-9.bin
+    partition: 9
+  - graph: ./graph/graph-10.bin
+    trigrams: ./trigrams/trigrams-f-10.bin
+    partition: 10
+  - graph: ./graph/graph-11.bin
+    trigrams: ./trigrams/trigrams-f-11.bin
+    partition: 11
+  - graph: ./graph/graph-12.bin
+    trigrams: ./trigrams/trigrams-f-12.bin
+    partition: 12
+  - graph: ./graph/graph-13.bin
+    trigrams: ./trigrams/trigrams-f-13.bin
+    partition: 13
+  - graph: ./graph/graph-14.bin
+    trigrams: ./trigrams/trigrams-f-14.bin
+    partition: 14
+  - graph: ./graph/graph-15.bin
+    trigrams: ./trigrams/trigrams-f-15.bin
+    partition: 15
+  - graph: ./graph/graph-16.bin
+    trigrams: ./trigrams/trigrams-f-16.bin
+    partition: 16
+  - graph: ./graph/graph-17.bin
+    trigrams: ./trigrams/trigrams-f-17.bin
+    partition: 17
+  - graph: ./graph/graph-18.bin
+    trigrams: ./trigrams/trigrams-f-18.bin
+    partition: 18
