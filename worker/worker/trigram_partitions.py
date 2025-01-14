@@ -9,12 +9,6 @@ import yaml
 
 from worker.utils import response_ok
 
-# TODO: get_trigram_word, get_trigram_edges, implement get_trigram, implement generate_text
-# TODO: get_trigram, error checking if server doesn't contain data from that partition
-# text_cache_arr = thread safe array. generate text should be sent to multi threads
-# fault tolerance when: worker server shutdown, worker server reject request,
-# manager server shutdown, manager server reject request
-
 class TrigramPartitions:
     def __init__(self):
         self.num_partitions = int(os.getenv("NUM_PARTITIONS"))
@@ -59,6 +53,9 @@ class TrigramPartitions:
     def shutdown(self):
         for thread in self.threads:
             thread.join()
+
+    def get_partition_list(self):
+        return self.services[0]["partitions"]
 
     def add_service(self, server):
         service_index = len(self.services)

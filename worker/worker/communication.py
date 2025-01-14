@@ -7,7 +7,7 @@ from worker.utils import rsa_decrypt
 
 
 class ServerCommunication:
-    def __init__(self):
+    def __init__(self, trigram_partitions):
         self.shared_secret = os.getenv("SHARED_SECRET")
         self.host = os.getenv("HOST")
         self.port = os.getenv("PORT")
@@ -17,9 +17,9 @@ class ServerCommunication:
         self.webserver_verification_key = ""
         self.coworkers = []
 
-        self.register()
+        self.register(trigram_partitions)
 
-    def register(self):
+    def register(self, trigram_partitions):
         if self.webserver == "NONE":
             return
 
@@ -27,6 +27,7 @@ class ServerCommunication:
         register_payload = {
             "host": self.host,
             "port": self.port,
+            "partitions": trigram_partitions.get_partition_list(),
             "public_key": self.public_key.decode("utf-8"),
         }
 
@@ -41,9 +42,10 @@ class ServerCommunication:
             message = response.json()
 
             self.webserver_verification_key = rsa_decrypt(message["key"], self.private_key)
-            self.coworkers = message["workers"]
+            self.coworkers = message["coworkers"]
 
-            ## TODO: register with coworker servers
+            for coworker in self.coworkers:
+                trigram_partitions.add_service(coworker)
             ## TODO: reregister if failed
         except Exception as e:
             print(f"[ERROR] {e}")
