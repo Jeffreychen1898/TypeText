@@ -1,3 +1,5 @@
+threads: 8
+text_per_thread: 10
 partitions:
   - graph: ./graph/graph-0.bin
     trigrams: ./trigrams/trigrams-f-0.bin

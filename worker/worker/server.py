@@ -12,7 +12,7 @@ server_communication = None
 def onload():
     global trigram_partitions
     trigram_partitions = TrigramPartitions()
-    # server_communication = ServerCommunication()
+    server_communication = ServerCommunication()
 
 @worker.app.route("/")
 def home():
@@ -39,9 +39,11 @@ def generate_text():
             "text": ""
         })
 
+    # generate and return the text
+    text = trigram_partitions.retrieve_text()
     return flask.jsonify({
         "error": None,
-        "text": "This is some default text!"
+        "text": text,
     })
 
 @worker.app.route("/retrieve/edge")

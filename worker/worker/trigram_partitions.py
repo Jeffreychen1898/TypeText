@@ -21,6 +21,10 @@ class TrigramPartitions:
         self.request_timeout_time = 5
         self.host = os.getenv("HOST")
         self.port = os.getenv("PORT")
+        self.text_per_thread = 10
+
+        self.program_running = True
+        self.num_threads = 1
 
         self.trigram_distribution = []
         self.services = []
@@ -45,17 +49,16 @@ class TrigramPartitions:
             "partitions": range(0, 19)
         })
 
-        self.generated_text_list = []
+        self.generated_text_list = [ [] for _ in range(self.num_threads) ]
+        self.generate_text_locks = [ threading.Lock() for _ in range(self.num_threads) ]
         self.generated_text_list_lock = threading.Lock()
-        threads = [ threading.Thread(target=self.text_generator) for _ in range(8) ]
-        for thread in threads:
+        self.threads = [ threading.Thread(target=self.text_generator, args=[i]) for i in range(8) ]
+        for thread in self.threads:
             thread.start()
-        for thread in threads:
+    
+    def shutdown(self):
+        for thread in self.threads:
             thread.join()
-        # generated_text = self.generate_text()
-        # print()
-        # print(" ".join(generated_text))
-        # print()
 
     def add_service(self, server):
         service_index = len(self.services)
@@ -72,6 +75,8 @@ class TrigramPartitions:
     def load_configs(self, filepath):
         with open(filepath, "r") as file:
             configs = yaml.load(file, Loader=yaml.FullLoader)
+            self.num_threads = configs["threads"]
+            self.text_per_thread = configs["text_per_thread"]
             for partition in configs["partitions"]:
                 partition_id = partition["partition"]
                 trigram_words = self.load_trigram_words(partition["trigrams"])
@@ -300,11 +305,24 @@ class TrigramPartitions:
         except:
             return False
 
-    def text_generator(self):
-        for i in range(20):
-            new_text = self.generate_text()
-            new_text = " ".join(new_text)
-            with self.generated_text_list_lock:
-                self.generated_text_list.append(new_text)
-                print(new_text)
-                print()
+    def retrieve_text(self):
+        random_index = random.randint(0, self.num_threads - 1)
+        while True:
+            with self.generate_text_locks[random_index]:
+                if len(self.generated_text_list[random_index]) > 0:
+                    return self.generated_text_list[random_index].pop()
+
+            random_index = random.randint(0, self.num_threads - 1)
+            time.sleep(0.1)
+
+    def text_generator(self, t):
+        while self.program_running:
+            with self.generate_text_locks[t]:
+                if len(self.generated_text_list[t]) > self.text_per_thread:
+                    time.sleep(0.1)
+                    continue
+
+                new_text = self.generate_text()
+                new_text = " ".join(new_text)
+
+                self.generated_text_list[t].append(new_text)

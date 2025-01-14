@@ -20,6 +20,9 @@ class ServerCommunication:
         self.register()
 
     def register(self):
+        if self.webserver == "NONE":
+            return
+
         # create the payload for registering
         register_payload = {
             "host": self.host,
