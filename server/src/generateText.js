@@ -5,8 +5,46 @@ const crypto = require("crypto")
 
 const utils = require("./utils")
 
-function sendRequest(options, message, jwtsecret) {
-  //
+/* options {hostname, port, path, method} */
+function sendRequest(options, message) {
+  const request_options = {
+    hostname: options.hostname,
+    port: options.port,
+    path: options.path,
+    method: options.method,
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": Buffer.byteLength(JSON.stringify(message))
+    },
+    timer: 5000
+  }
+
+  return new Promise((resolve, reject) => {
+    // send the request
+    const request = http.request(request_options, (response) => {
+      let data = ""
+
+      response.on("data", (chunk) => {
+        data += chunk
+      })
+
+      response.on("end", (_) => {
+        return resolve(JSON.parse(data))
+      })
+    })
+
+    request.write(JSON.stringify(message))
+
+    // errors
+    request.on("error", (e) => {
+      return reject(e)
+    })
+    request.on("timeout", () => {
+      return reject("[ERROR] request timeout!")
+    })
+
+    request.end()
+  })
 }
 
 // registeration:
@@ -22,35 +60,32 @@ class TextGenerator {
     this.router.post("/register", this.registerWorker.bind(this))
   }
 
-  generateText(req, res) {
+  async generateText(req, res) {
     const request_options = {
-      hostname: "10.0.0.13",
+      hostname: "127.0.0.1",
       port: "8000",
-      path: "/",
-      method: "GET"
+      path: "/generate",
+      method: "POST",
     }
 
-    const request = http.request(request_options, (response) => {
-      let data = ""
+    const token = {
+      "token": jwt.sign({key: "nokey"}, "nokey")
+    }
 
-      response.on("data", (chunk) => {
-        data += chunk
+    try {
+      const result = await sendRequest(request_options, token)
+      res.status(200).json({
+        error: null,
+        text: result.text
       })
 
-      response.on("end", (chunk) => {
-        console.log(data)
+    } catch(e) {
+      console.log(e)
+      return res.status(500).json({
+        error: "[ERROR] Internal server error!",
+        text: "[ERROR] Internal server error!"
       })
-    })
-
-    request.on("error", (e) => {
-      console.log(`[ERROR] ${e.message}`)
-    })
-
-    request.end()
-
-    res.status(200).json({
-      text: "Hello This is some text"
-    })
+    }
   }
 
   registerWorker(req, res) {

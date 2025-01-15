@@ -305,7 +305,9 @@ class TrigramPartitions:
     def retrieve_text(self):
         random_index = random.randint(0, self.num_threads - 1)
         while True:
+            print(f"waiting on lock: {time.time()}")
             with self.generate_text_locks[random_index]:
+                print(f"lock opened: {time.time()}")
                 if len(self.generated_text_list[random_index]) > 0:
                     return self.generated_text_list[random_index].pop()
 
@@ -319,7 +321,8 @@ class TrigramPartitions:
                     time.sleep(0.1)
                     continue
 
-                new_text = self.generate_text()
-                new_text = " ".join(new_text)
+            new_text = self.generate_text()
+            new_text = " ".join(new_text)
 
+            with self.generate_text_locks[t]:
                 self.generated_text_list[t].append(new_text)

@@ -14,10 +14,13 @@ class ServerCommunication:
         self.webserver = os.getenv("WEBSERVER")
 
         self.private_key, self.public_key = rsa_keygen()
-        self.webserver_verification_key = ""
+        self.webserver_verification_key = "nokey"
         self.coworkers = []
 
         self.register(trigram_partitions)
+
+    def is_webserver_bound(self):
+        return self.webserver != "NONE"
 
     def register(self, trigram_partitions):
         if self.webserver == "NONE":

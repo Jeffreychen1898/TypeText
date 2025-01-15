@@ -7,17 +7,17 @@ from worker.trigram_partitions import TrigramPartitions
 
 import worker
 
-server_communication = None
-
 # WARNING: setting coworkers is not tested
 
 def onload():
     global trigram_partitions
+    global server_communication
     trigram_partitions = TrigramPartitions()
     server_communication = ServerCommunication(trigram_partitions)
 
 @worker.app.route("/")
 def home():
+    # FOR TESTING
     return flask.jsonify({"a": "adsfasdf"})
 
 @worker.app.route("/new/coworker")
@@ -30,6 +30,7 @@ def new_coworker():
     # verify the token
     token = request.json["token"]
     try:
+        print(server_communication.get_verification_key())
         token_decoded = jwt.decode(token, server_communication.get_verification_key())
         server_communication.set_verificiation_key(token_decoded["token"])
     except Exception as e:
@@ -55,8 +56,11 @@ def generate_text():
     # verify the token
     token = request.json["token"]
     try:
-        verification_key = jwt.decode(token, server_communication.get_verification_key())
-        server_communication.set_verificiation_key(verification_key)
+        if server_communication.is_webserver_bound():
+            verification_key = jwt.decode(token, server_communication.get_verification_key(), algorithms=["HS256"])
+            server_communication.set_verification_key(verification_key["key"])
+        else:
+            verification_key = jwt.decode(token, "nokey", algorithms=["HS256"])
     except Exception as e:
         print(e)
         return flask.jsonify({
