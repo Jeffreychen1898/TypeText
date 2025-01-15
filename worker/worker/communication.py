@@ -54,4 +54,5 @@ class ServerCommunication:
         return self.webserver_verification_key
 
     def set_verificiation_key(self, key):
+        decrypted_key = rsa_decrypt(key, self.private_key)
         self.webserver_verification_key = key

@@ -9,7 +9,6 @@ import worker
 
 server_communication = None
 
-# SECURITY VULNERABILITY: new jwt key is not encrypted
 # WARNING: setting coworkers is not tested
 
 def onload():
