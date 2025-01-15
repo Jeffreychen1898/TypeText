@@ -1,4 +1,5 @@
 import os
+import queue
 import threading
 import time
 import struct
@@ -43,9 +44,8 @@ class TrigramPartitions:
             "partitions": range(0, 19)
         })
 
-        self.generated_text_list = [ [] for _ in range(self.num_threads) ]
-        self.generate_text_locks = [ threading.Lock() for _ in range(self.num_threads) ]
-        self.generated_text_list_lock = threading.Lock()
+        self.generated_text_list = [ queue.Queue() for _ in range(self.num_threads) ]
+        # self.generate_text_locks = [ threading.Lock() for _ in range(self.num_threads) ]
         self.threads = [ threading.Thread(target=self.text_generator, args=[i]) for i in range(8) ]
         for thread in self.threads:
             thread.start()
@@ -305,24 +305,20 @@ class TrigramPartitions:
     def retrieve_text(self):
         random_index = random.randint(0, self.num_threads - 1)
         while True:
-            print(f"waiting on lock: {time.time()}")
-            with self.generate_text_locks[random_index]:
-                print(f"lock opened: {time.time()}")
-                if len(self.generated_text_list[random_index]) > 0:
-                    return self.generated_text_list[random_index].pop()
-
-            random_index = random.randint(0, self.num_threads - 1)
-            time.sleep(0.1)
+            try:
+                return self.generated_text_list[random_index].get(block=True, timeout=1)
+            except:
+                random_index = random.randint(0, self.num_threads - 1)
+                time.sleep(0.1)
 
     def text_generator(self, t):
         while self.program_running:
-            with self.generate_text_locks[t]:
-                if len(self.generated_text_list[t]) > self.text_per_thread:
-                    time.sleep(0.1)
-                    continue
-
             new_text = self.generate_text()
             new_text = " ".join(new_text)
 
-            with self.generate_text_locks[t]:
-                self.generated_text_list[t].append(new_text)
+            while self.generated_text_list[t].qsize() > self.text_per_thread:
+                time.sleep(0.1)
+
+            self.generated_text_list[t].put(new_text)
+
+            time.sleep(0.1)
