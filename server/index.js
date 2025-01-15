@@ -8,6 +8,7 @@ const sql = require("./src/database")
 const noticesRoutes = require("./src/retrieveInfoRoutes")
 const userRoutes = require("./src/userRoutes")
 const textRoutes = require("./src/textRoutes")
+const generateText = require("./src/generateText")
 const uploads = require("./src/uploads")
 
 const app = express()
@@ -36,10 +37,11 @@ app.use(cors())
 app.use("/api/users/upload/pfp", uploads.pfpUpload.single("pfp"))
 app.use(uploads.errorHandling)
 
-//app.use(bodyParser.json())
+app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // ROUTES
+app.use("/api/worker", generateText.router)
 app.use("/api/notices", noticesRoutes)
 app.use("/api/text", textRoutes)
 app.use("/api/users", userRoutes.router)
