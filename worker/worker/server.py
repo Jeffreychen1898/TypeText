@@ -57,7 +57,12 @@ def generate_text():
     token = request.json["token"]
     try:
         if server_communication.is_webserver_bound():
-            verification_key = jwt.decode(token, server_communication.get_verification_key(), algorithms=["HS256"])
+            verification_key = jwt.decode(
+                token,
+                server_communication.get_verification_key(),
+                algorithms=["HS256"],
+                options={"verify_iat": False}
+            )
             server_communication.set_verification_key(verification_key["key"])
         else:
             verification_key = jwt.decode(token, "nokey", algorithms=["HS256"])

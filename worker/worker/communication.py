@@ -41,11 +41,14 @@ class ServerCommunication:
 
         # receive response
         try:
-            response = requests.post(f"{self.webserver}/api/worker/register", json=register_data)
+            response = requests.post(f"{self.webserver}/api/worker/register", json=register_data, timeout=5)
             message = response.json()
 
             self.webserver_verification_key = rsa_decrypt(message["key"], self.private_key)
             self.coworkers = message["coworkers"]
+
+            self.webserver_verification_key = rsa_decrypt(message["key"], self.private_key)
+            print(self.webserver_verification_key)
 
             for coworker in self.coworkers:
                 trigram_partitions.add_service(coworker)
@@ -56,6 +59,6 @@ class ServerCommunication:
     def get_verification_key(self):
         return self.webserver_verification_key
 
-    def set_verificiation_key(self, key):
+    def set_verification_key(self, key):
         decrypted_key = rsa_decrypt(key, self.private_key)
-        self.webserver_verification_key = key
+        self.webserver_verification_key = decrypted_key
