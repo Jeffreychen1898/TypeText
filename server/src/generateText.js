@@ -47,44 +47,55 @@ function sendRequest(options, message) {
   })
 }
 
-// registeration:
-//    host
-//    port
-//    public key
-
 class TextGenerator {
   constructor() {
     this.router = express.Router()
 
-    this.router.get("/generate", this.generateText.bind(this))
+    this.workers = []
+
+    // this.router.get("/generate", this.generateText.bind(this))
     this.router.post("/register", this.registerWorker.bind(this))
   }
 
-  async generateText(req, res) {
+  async generateText() {
+    if (this.workers.length == 0) {
+      throw Error("Text generation servers are unavailable!")
+    }
+
+    const selected_server = Math.floor(Math.random() * this.workers.length);
     const request_options = {
-      hostname: "127.0.0.1",
-      port: "8000",
+      hostname: this.workers[selected_server].host,
+      port: this.workers[selected_server].port,
       path: "/generate",
       method: "POST",
     }
 
+    const new_key = utils.generateJWTKey()
+    const encrypted_key = crypto.publicEncrypt({
+      key: this.workers[selected_server].public_key,
+      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      oaepHash: "sha256"
+    }, Buffer.from(new_key)).toString("base64")
+
     const token = {
-      "token": jwt.sign({key: "nokey"}, "nokey")
+      "token": jwt.sign(
+        {key: encrypted_key},
+        this.workers[selected_server].jwt_key
+      )
     }
+    this.workers[selected_server].jwt_key = new_key
 
     try {
       const result = await sendRequest(request_options, token)
-      res.status(200).json({
-        error: null,
-        text: result.text
-      })
+      if (result.text == "") {
+        throw Error("Internal server error!")
+      }
+
+      return result.text
 
     } catch(e) {
       console.log(e)
-      return res.status(500).json({
-        error: "[ERROR] Internal server error!",
-        text: "[ERROR] Internal server error!"
-      })
+      throw Error("Internal server error!")
     }
   }
 
@@ -95,10 +106,9 @@ class TextGenerator {
         console.log("unable to verify")
         res.status(200).json({
           key: "",
-          workers: []
+          coworkers: []
         })
       } else {
-        console.log(decoded)
         const new_key = utils.generateJWTKey()
 
         const encrypted_key = crypto.publicEncrypt({
@@ -106,13 +116,36 @@ class TextGenerator {
           padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
           oaepHash: "sha256"
         }, Buffer.from(new_key)).toString("base64")
-        console.log(new_key)
+
+        const worker_server = {
+          host: decoded.host,
+          port: decoded.port,
+        }
+
+        // TODO: do binary search or something
+        for (let i=0;i<this.workers.length;++i) {
+          if ( this.workers[i].host == worker_server.host
+            && this.workers[i].port == worker_server.port ) {
+              this.workers.splice(i, 1)
+              break;
+            }
+        }
+
+        const coworkers_list = [ ...this.workers ]
+        this.workers.push({
+          host: decoded.host,
+          port: decoded.port,
+          partitions: decoded.partitions,
+          public_key: decoded.public_key,
+          jwt_key: new_key
+        })
+        console.log(this.workers)
+
         res.status(200).json({
           key: encrypted_key,
-          workers: []
+          coworkers: coworkers_list
         })
       }
-      //res.send()
     })
   }
 }
@@ -120,5 +153,6 @@ class TextGenerator {
 const text_generator = new TextGenerator()
 
 module.exports = {
-  router: text_generator.router
+  router: text_generator.router,
+  generator: text_generator
 }

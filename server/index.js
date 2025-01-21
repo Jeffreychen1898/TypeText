@@ -41,8 +41,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // ROUTES
+textRoutes.attachTextGenerator(generateText.generator)
 app.use("/api/worker", generateText.router)
 app.use("/api/notices", noticesRoutes)
-app.use("/api/text", textRoutes)
+app.use("/api/text", textRoutes.router)
 app.use("/api/users", userRoutes.router)
 app.use("/", express.static("pages"))

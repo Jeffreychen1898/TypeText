@@ -12,5 +12,5 @@ function generateJWTKey() {
 }
 
 module.exports = {
-  generateJWTKey
+  generateJWTKey,
 }

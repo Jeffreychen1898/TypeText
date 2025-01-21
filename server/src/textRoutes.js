@@ -11,6 +11,7 @@ const DEFAULT_TEXT_FRESH_TIME = 24 // in hours
 class TextRouter {
   constructor() {
     this.m_defaultText = ""
+    this.m_textGenerator = null
 
     setInterval(
       () => {
@@ -21,8 +22,12 @@ class TextRouter {
 
     // define the routes
     this.router = express.Router()
-    this.router.post("/generate", users.authUser, this.generateText.bind(this))
+    this.router.get("/generate", users.authUser, this.generateText.bind(this))
     this.router.post("/session", users.authUser, this.postSession.bind(this))
+  }
+
+  attachTextGenerator(generator) {
+    this.m_textGenerator = generator
   }
 
   async generateText(req, res) {
@@ -35,18 +40,29 @@ class TextRouter {
       }
     }
 
-    // check if the notices are loaded in
-    if (this.m_defaultText === "") {
-      return res.status(500).json({
-        error: "Internal server error!",
-        text: "",
+
+    try {
+      const generated_text = await this.m_textGenerator.generateText()
+
+      res.status(200).json({
+        error: null,
+        text: generated_text
+      })
+    } catch(err) {
+      //console.log(err)
+      // check if the notices are loaded in
+      if (this.m_defaultText === "") {
+        return res.status(500).json({
+          error: "Internal server error!",
+          text: "",
+        })
+      }
+
+      res.status(200).json({
+        error: null,
+        text: this.m_defaultText,
       })
     }
-
-    res.status(200).json({
-      error: null,
-      text: this.m_defaultText,
-    })
   }
 
   async postSession(req, res) {
@@ -84,4 +100,4 @@ class TextRouter {
 
 const text_router_handler = new TextRouter()
 
-module.exports = text_router_handler.router
+module.exports = text_router_handler
